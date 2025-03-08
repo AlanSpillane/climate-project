@@ -1,1 +1,276 @@
-<h1>Testing</h1>
+<html>
+<head>
+    <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/style.css" type="text/css" rel="stylesheet">  
+
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-linear-gauge.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-table.min.js"></script>
+    <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
+    <script src="https://climateclock.world/widget-v2.js" async></script>
+    <script>
+        
+        /* ==================================================================================== */
+        /* ENTER NEW QUESTIONS -  START */
+
+        const question_a = "Does your company provide facilities for your employees to reduce their carbon footprint e.g. bike to work";
+        const answer_a_1 = "Yes";
+        const answer_a_2 = "No";
+        const correct_answer_question_a = 1;
+
+        const question_b = "Are your products and services locally and/or ethically sourced";
+        const answer_b_1 = "Yes";
+        const answer_b_2 = "No";
+        const correct_answer_question_b = 1;
+
+        const question_c = "Do you have recycling facilities accessible to all staff, and is this disposed of properly";
+        const answer_c_1 = "Yes";
+        const answer_c_2 = "No";
+        const correct_answer_question_c = 1;
+
+        const question_d = "Is there incentives in place to encourage your employees to turn off lights, turn off computers, etc.";
+        const answer_d_1 = "Yes";
+        const answer_d_2 = "No";
+        const correct_answer_question_d = 1;
+
+        const question_e = "Do you think there is more your company could do to have a better carbon footprint";
+        const answer_e_1 = "Yes";
+        const answer_e_2 = "No";
+        const correct_answer_question_e = 1;
+        
+        /* ENTER NEW QUESTIONS - END */
+        /* ==================================================================================== */
+
+        const questions = [
+            {
+                question: question_a,
+                answers: [answer_a_1, answer_a_2],
+                correct: correct_answer_question_a
+            },
+            {
+                question: question_b,
+                answers: [answer_b_1, answer_b_2],
+                correct: correct_answer_question_b
+            },
+            {
+                question: question_c,
+                answers: [answer_c_1, answer_c_2],
+                correct: correct_answer_question_c
+            },
+            {
+                question: question_d,
+                answers: [answer_d_1, answer_d_2],
+                correct: correct_answer_question_d
+            },
+            {
+                question: question_e,
+                answers: [answer_e_1, answer_e_2],
+                correct: correct_answer_question_e
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let currentClimateRating = 1.5;
+        let selectedButton = null;
+
+        function loadQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            document.getElementById("question-text").textContent = questionData.question;
+            const answersContainer = document.getElementById("answers");
+            answersContainer.innerHTML = "";
+            selectedButton = null;
+            
+            questionData.answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.classList.add("btn", "btn-outline-primary", "btn-lg", "d-block", "w-100", "mb-2");
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(button, index);
+                answersContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(button, selectedIndex) {
+            selectedIndex = selectedIndex + 1;
+            if (selectedButton) {
+                selectedButton.classList.remove("selected");
+            }
+            button.classList.add("selected");
+            selectedButton = button;
+            checkAnswer(selectedIndex);
+        }
+
+        function checkAnswer(selectedIndex) {
+            const correctIndex = questions[currentQuestionIndex].correct;
+            if (selectedIndex === correctIndex) {
+                currentClimateRating = currentClimateRating - 0.2;
+            } else {
+                currentClimateRating = currentClimateRating + 0.2;
+            }
+
+            updateDegreesLive(currentClimateRating);
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById("question-container").innerHTML = "<br /><h2 class='text-center'>Completed!</h2><br /><h3 class='text-center'>Your score is " + currentClimateRating.toFixed(1) + "&deg;</h3><button class='btn btn-primary mt-3 btn-lg' onclick='location.reload()'>Start Again</button>";
+            }
+        }
+
+
+        /* Thermometer */
+
+        var gauge = null;
+
+        function updateDegreesLive(value) {
+            gauge.data([value]).padding(40, 0, 40, 0);
+        }
+
+        function loadThermometer(value) {
+        
+            function drawLinearGauge(value) {
+                    gauge = anychart.gauges.linear();
+                    gauge.data([value]).padding(40, 0, 40, 0);
+                    gauge
+                    .tooltip()
+                    .useHtml(true)
+                    .format(function () {
+                        switch (this.pointer.id()) {
+                        case '0':
+                            return this.value + '&deg;C';
+                        case '1':
+                            return (
+                            this.value +
+                            '&deg;C'
+                            );
+                        default:
+                        }
+                });
+
+
+                var background = gauge.background();
+                gauge.background().fill({color: 'white', opacity: 0.0}); 
+
+                // Scale settings
+                var scale = gauge.scale();
+                scale.minimum(0).maximum(3.1).ticks({ interval: 0.1 });
+
+                // Set axis and axis settings
+                var axis = gauge.axis();
+                axis.scale(scale).width('0.5%').offset('-1%');
+
+                // Set text formatter for axis labels
+                axis.labels().useHtml(true).format('{%Value}&deg;');
+
+                return gauge;
+            }
+
+            // Create gauge with two axis
+            var multiAxisGauge = drawLinearGauge(value);
+            var multiAxisThermometer = multiAxisGauge.thermometer(0);
+            multiAxisThermometer.name('Thermometer').id('1');
+
+            // Add left axis with custom labels
+            var axisLeft = multiAxisGauge.axis(0);
+            axisLeft.minorTicks(true);
+            axisLeft
+                .labels()
+                .useHtml(true)
+                .fontSize(14)
+                .format(function () {
+                if (this.value > 1.5) {
+                    return (
+                    '<span style="color:#dd2c00;">' + this.value + '&deg;</span>'
+                    );
+                }
+                return (
+                    '<span style="color: #1976d2;">' + this.value + '&deg;</span>'
+                );
+                });
+
+            // Add right axis with custom labels
+            var axisRight = multiAxisGauge.axis(1);
+            axisRight.minorTicks(true);
+            axisRight
+                .labels()
+                .useHtml(true)
+                .fontSize(14)
+                .format(function () {
+                if (this.value > 1.5) {
+                    return (
+                    '<span style="color:#dd2c00;">' + this.value + '&deg;</span>'
+                    );
+                }
+                return (
+                    '<span style="color: #1976d2;">' + this.value + '&deg;</span>'
+                );
+                });
+            axisRight.orientation('right').offset('3.5%');
+
+            // Set scale for right axis
+            var rScale = anychart.scales.linear();
+            rScale.minimum(0).maximum(3.1).ticks({ interval: 0.5 });
+            axisRight.scale(rScale);
+
+            // Create table to place thermometers
+            var layoutTable = anychart.standalones.table();
+            layoutTable
+                .hAlign('center')
+                .vAlign('middle')
+                .useHtml(true)
+                .fontSize(16)
+                .cellBorder(null);
+                
+            layoutTable.cellFill({color: 'white', opacity: 0.0});
+
+            layoutTable.contents([
+                [multiAxisGauge]
+            ]);
+
+            // Set container id and initiate drawing
+            layoutTable.container('thermometer');
+            layoutTable.draw();
+        }
+
+        anychart.onDocumentReady(function () {
+            loadThermometer(1.5);
+        });
+
+        window.onload = loadQuestion;
+    </script>
+</head>
+<body>
+    <div class="grid">
+        <!-- Climate Clock -->
+        <div class="header">
+            <climate-clock class="climate-clock" />
+        </div>
+        <div class="content">
+            <!-- Questions -->
+            <div class="questions">
+                <div class="quiz-container">
+                    <h1 class="text-center">Sustainability Questions</h1>
+                    <br /><br />
+                    <div id="question-container" class="mt-4">
+                        <h3 id="question-text"></h3>
+                        <div id="answers" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Thermometer -->
+            <div class="thermometer-container">
+                <h2 class="score-text">Climate Score</h2>
+                <div id="thermometer" class="thermometer">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+body,html {
+    margin: 0;
+    font-family: Rockwell, Helvetica, sans-serif;
+    color: rgba(74, 74, 74, 0.837);
+
+    background-image: url('../background.jpeg'); /* Replace with your image URL */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-size: cover;
+    background-color: #261812;
+
+    min-width: fit-content;
+
+}
+
+.grid {
+    display: flexbox;
+    grid-template-areas:
+      "header"
+      "content";
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    margin: 0;
+}
+
+.grid > div.header {
+    grid-area: header;
+    text-align: center;
+}
+  
+.grid > div.content {
+    grid-area: content;
+}
+
+.anychart-credits {
+    display: none;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+}
+
+.questions {
+    flex: 1;
+    padding: 20px 20px 0px 20px;
+}
+
+.thermometer {
+    width: 400px;
+    height: 700px;
+}
+
+.thermometer-container {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+.score-text {
+    text-align: center;
+    margin: 40px 0px 0px 0px;
+}
+
+.quiz-container {
+    /* margin: 50px auto; */
+    background: rgba(255, 255, 255, 0.7);
+    padding: 200px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    height: 800px;
+}
+
+.selected {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
